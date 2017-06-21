@@ -1,5 +1,15 @@
 'use strict';
 
+
+// `STORE` is responsible for storing the underlying data
+// that our app needs to keep track of in order to work.
+//
+// for a shopping list, our data model is pretty simple.
+// we just have an array of shopping list items. each one
+// is an object with a `name` and a `checked` property that
+// indicates if it's checked off or not.
+// we're pre-adding items to the shopping list so there's
+// something to see when the page first loads.
 const STORE = [
   {name: "apples", checked: false},
   {name: "oranges", checked: false},
@@ -8,75 +18,10 @@ const STORE = [
 ];
 
 
-
-// below we've set up some constants that point to
-// classes, ids, and other attributes from our HTML and CSS
-// that our application code will need to use to manipulate
-// the DOM.
-// We *could* just have these values hard coded into the particular
-// functions that use them, but that is harder to maintain. What if
-// for some reason we need to change '.js-shopping-list', which is the
-// identifier for the shopping list element in our HTML? With these
-// constants, it only needs to be changed in one place, at
-// the top of the file, even if it's referenced in multiple places.
-const NEW_ITEM_FORM_INPUT_CLASS = ".js-shopping-list-entry";
-const SHOPPING_LIST_ELEMENT_CLASS = ".js-shopping-list";
-const ITEM_CHECKED_TARGET_IDENTIFIER = "js-shopping-item";
-const ITEM_CHECKED_CLASS_NAME = "shopping-item__checked";
-const ITEM_INDEX_ATTRIBUTE  = "data-item-index";
-const ITEM_INDEX_ELEMENT_IDENTIFIER = "js-item-index-element";
-const ITEM_CHECKED_BUTTON_IDENTIFIER = ".js-item-toggle";
-
-
-// this function is reponsible for generating an HTML string representing
-// a shopping list item. `item` is the object representing the list item.
-// `itemIndex` is the index of the item from the shopping list array (aka,
-// `STORE`). `template` is a jQuery object that represents the list item HTML
-// template.
-function generateItemElement(item, itemIndex, template) {
-  return `
-    <li class="${ITEM_INDEX_ELEMENT_IDENTIFIER}" ${ITEM_INDEX_ATTRIBUTE}="${itemIndex}">
-      <span class="shopping-item ${ITEM_CHECKED_TARGET_IDENTIFIER} ${item.checked ? ITEM_CHECKED_CLASS_NAME : ''}">${item.name}</span>
-      <div class="shopping-item-controls">
-        <button class="shopping-item-toggle ${ITEM_CHECKED_BUTTON_IDENTIFIER}">
-            <span class="button-label">check</span>
-        </button>
-        <button class="shopping-item-delete js-item-delete">
-            <span class="button-label">delete</span>
-        </button>
-      </div>
-    </li>`;
-}
-
-
-// this function is reponsible for generating all the `<li>`s that will eventually get
-// inserted into the shopping list `ul` in the com. it takes one argument,
-// `shoppingList` which is the array representing the data in the shopping list.
-function generateShoppingItemsString(shoppingList) {
-  console.log("Generating shopping list element");
-  // `items` will be an array of strings representing individual list items.
-  // we use the array `.map` function
-  // (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map?v=control)
-  // to loop through `shoppingList`.
-  const items = shoppingList.map(
-    (item, index) => generateItemElement(item, index));
-  // this function is responsible for returning a string, but `items` is an array.
-  // we return `items.join` because that will join the individual strings in `items`
-  // together into a single string.
-  return items.join();
-}
-
-
-// this function is responsible for rendering a shopping list in the DOM.
 function renderShoppingList() {
-  console.log("Rendering shopping list");
-  // we call `generateShoppingItemsString` to generate the string representing
-  // the shopping list items
-  const shoppingListItemsString = generateShoppingItemsString(STORE);
-  // we then find the `SHOPPING_LIST_ELEMENT_ CLASS` element in the DOM,
-  // (which happens to be a `<ul>` with the class `.js-shopping-list` on it )
-  // and set its inner HTML to the value of `shoppingListItemsString`.
-  $(SHOPPING_LIST_ELEMENT_CLASS).html(shoppingListItemsString);
+  // this function will be repsonsible for rendering the shopping list in
+  // the DOM
+  console.log('`renderShoppingList` ran');
 }
 
 
