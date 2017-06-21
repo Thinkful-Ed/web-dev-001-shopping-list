@@ -1,12 +1,5 @@
 'use strict';
 
-
-// for a shopping list, our data model is pretty simple.
-// we just have an array of shopping list items. each one
-// is an object with a `name` and a `checked` property that
-// indicates if it's checked off or not.
-// we're pre-adding items to the shopping list so there's
-// something to see when the page first loads.
 const STORE = [
   {name: "apples", checked: false},
   {name: "oranges", checked: false},
@@ -15,35 +8,23 @@ const STORE = [
 ];
 
 
-// below we've set up a bunch of constants that point to
-// classes, ids, and other attributes from our HTML and CSS
-// that our application code will need to use to manipulate
-// the DOM.
-// We *could* just have these values hard coded into the particular
-// functions that use them, but that is harder to maintain. What if
-// for some reason we need to change '.js-shopping-list', which is the
-// identifier for the shopping list element in our HTML? With these
-// constants, it only needs to be changed in one place, at
-// the top of the file. Without constants, we have three separate functions
-// that currently use `SHOPPING_LIST_ELEMENT_CLASS`, so without constants
-// there would be three places in our code we'd need to remember to update!
 const NEW_ITEM_FORM_ID = "#js-shopping-list-form";
 const NEW_ITEM_FORM_INPUT_CLASS = ".js-shopping-list-entry";
 const SHOPPING_LIST_ELEMENT_CLASS = ".js-shopping-list";
 const ITEM_CHECKED_TARGET_IDENTIFIER = "js-shopping-item";
 const ITEM_CHECKED_BUTTON_IDENTIFIER = "js-item-toggle";
-const ITEM_DELETE_BUTTON_IDENTIFIER = "js-item-delete";
 const ITEM_CHECKED_CLASS_NAME = "shopping-item__checked";
 const ITEM_INDEX_ATTRIBUTE  = "data-item-index";
 const ITEM_INDEX_ELEMENT_IDENTIFIER = "js-item-index-element";
 
 
-// this function is reponsible for generating an HTML string representing
-// a shopping list item. `item` is the object representing the list item.
-// `itemIndex` is the index of the item from the shopping list array (aka,
-// `STORE`).
+// used to point to element that users click to delete
+// an item from shopping list.
+const ITEM_DELETE_BUTTON_IDENTIFIER = "js-item-delete";
+
+
+
 function generateItemElement(item, itemIndex, template) {
-  // we use an ES6 template string
   return `
     <li class="${ITEM_INDEX_ELEMENT_IDENTIFIER}" ${ITEM_INDEX_ATTRIBUTE}="${itemIndex}">
       <span class="shopping-item ${ITEM_CHECKED_TARGET_IDENTIFIER} ${item.checked ? ITEM_CHECKED_CLASS_NAME : ''}">${item.name}</span>
@@ -59,52 +40,24 @@ function generateItemElement(item, itemIndex, template) {
 }
 
 
-// this function is reponsible for generating all the `<li>`s that will eventually get
-// inserted into the shopping list `ul` in the com. it takes one argument,
-// `shoppingList` which is the array representing the data in the shopping list.
 function generateShoppingItemsString(shoppingList) {
   console.log("Generating shopping list element");
-  // `items` will be an array of strings representing individual list items.
-  // we use the array `.map` function
-  // (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map?v=control)
-  // to loop through `shoppingList`. For each item in `shoppingList`, we...
   const items = shoppingList.map(
     (item, index) => generateItemElement(item, index));
-  // this function is responsible for returning a string, but `items` is an array.
-  // we return `items.join` because that will join the individual strings in `items`
-  // together into a single string.
   return items.join();
 }
 
 
-// we call `generateShoppingItemsString` to generate the string representing
-  // the shopping list items
 function renderShoppingList() {
   console.log("Rendering shopping list");
-  // we call `generateShoppingItemsString` to generate the string representing
-  // the shopping list items
   const shoppingListItemsString = generateShoppingItemsString(STORE);
-  // we then find the `SHOPPING_LIST_ELEMENT_CLASS` element in the DOM,
-  // (which happens to be a `<ul>` with the class `.js-shopping-list` on it )
-  // and set its inner HTML to the value of `shoppingListItemsString`.
   $(SHOPPING_LIST_ELEMENT_CLASS).html(shoppingListItemsString);
 }
 
 
-// name says it all. responsible for adding a shopping list item.
+
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  // adding a new item to the shopping list is as easy as pushing a new
-  // object onto the `STORE` array. we set `name` to `itemName` and default
-  // the new item to be unchecked (`checked: false`).
-  //
-  // Note that this function intentionally has *side effects* -- it mutates
-  // the global variable STORE (defined at the top of this file).
-  // Ideally you avoid side effects whenever possible,
-  // and there are good approaches to these sorts of situations on the front
-  // end that avoid side effects, but they are a bit too complex to get into
-  // here. Later in the course, when you're learning React though, you'll
-  // start to learn approaches that avoid this.
   STORE.push({name: itemName, checked: false});
 }
 
@@ -123,64 +76,37 @@ function deleteListItem(itemIndex) {
 }
 
 
-// this function is reponsible for toggling the `checked` attribute on an item.
+
 function toggleCheckedForListItem(itemIndex) {
   console.log(`Toggling checked property for item at index ${itemIndex}`);
-  // if `checked` was true, it becomes false, and vice-versa. also, here again
-  // we're relying on side effect / mutating the global `STORE`
   STORE[itemIndex].checked = !STORE[itemIndex].checked;
 }
 
 
-// responsible for watching for new item submissions. when those happen
-// it gets the name of the new item element, zeros out the form input value,
-// adds the new item to the list, and re-renders the shopping list in the DOM.
 function handleNewItemSubmit() {
   $(NEW_ITEM_FORM_ID).submit(function(event) {
-    // stop the default form submission behavior
     event.preventDefault();
-
-    // we get the item name from the text input in the submitted form
     const newItemElement = $(NEW_ITEM_FORM_INPUT_CLASS);
     const newItemName = newItemElement.val();
-    // now that we have the new item name, we remove it from the input so users
-    // can add new items
     newItemElement.val("");
-    // update the shopping list with the new item...
     addItemToShoppingList(newItemName);
-    // then render the updated shopping list
     renderShoppingList();
   });
 }
 
 
-// this function is responsible for retieving the array index of a
-// shopping list item in the DOM. recall that we're storing this value
-// in a `data-item-index` attribute on each list item element in the DOM.
 function getItemIndexFromElement(item) {
   const itemIndexString = $(item)
     .closest(`.${ITEM_INDEX_ELEMENT_IDENTIFIER}`)
     .attr(ITEM_INDEX_ATTRIBUTE);
-  // the value of `data-item-index` will be a string, so we need to convert
-  // it to an integer, using the built-in JavaScript `parseInt` function.
   return parseInt(itemIndexString, 10);
 }
 
 
-// this function is responsible for noticing when users click the "checked" button
-// for a shopping list item. when that happens it toggles the checked styling for that
-// item.
 function handleItemCheckClicked() {
-  // note that we have to use event delegation here because list items are not originally
-  // in the DOM on page load.
   $(SHOPPING_LIST_ELEMENT_CLASS).on("click", `.${ITEM_CHECKED_BUTTON_IDENTIFIER}`, event => {
-    // call the `getItemIndexFromElement` function just above on the target of
-    // the current, clicked element in order to get the index of the clicked
-    // item in `STORE`
     const itemIndex = getItemIndexFromElement(event.currentTarget);
-    // toggle the clicked item's checked attribute
     toggleCheckedForListItem(itemIndex);
-    // render the updated shopping list
     renderShoppingList();
   });
 }
@@ -203,10 +129,6 @@ function handleDeleteItemClicked() {
 }
 
 
-// this function will be our callback when the page loads. it's responsible for
-// initially rendering the shopping list, and activating our individual functions
-// that handle new item submission and user clicks on the "check" and "delete" buttons
-// for individual shopping list items.
 function handleShoppingList() {
   renderShoppingList();
   handleNewItemSubmit();
@@ -215,5 +137,4 @@ function handleShoppingList() {
 }
 
 
-// when the page loads, call `handleShoppingList`
 $(handleShoppingList);
