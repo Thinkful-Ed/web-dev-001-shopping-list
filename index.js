@@ -9,20 +9,30 @@ const STORE = [
 
 
 
-// this points to the form for submitting new shopping
-// list items
-const NEW_ITEM_FORM_ID = "#js-shopping-list-form";
-// this points to the input element containing the name
-// of the new item
+// below we've set up some constants that point to
+// classes, ids, and other attributes from our HTML and CSS
+// that our application code will need to use to manipulate
+// the DOM.
+// We *could* just have these values hard coded into the particular
+// functions that use them, but that is harder to maintain. What if
+// for some reason we need to change '.js-shopping-list', which is the
+// identifier for the shopping list element in our HTML? With these
+// constants, it only needs to be changed in one place, at
+// the top of the file, even if it's referenced in multiple places.
 const NEW_ITEM_FORM_INPUT_CLASS = ".js-shopping-list-entry";
 const SHOPPING_LIST_ELEMENT_CLASS = ".js-shopping-list";
 const ITEM_CHECKED_TARGET_IDENTIFIER = "js-shopping-item";
 const ITEM_CHECKED_CLASS_NAME = "shopping-item__checked";
 const ITEM_INDEX_ATTRIBUTE  = "data-item-index";
 const ITEM_INDEX_ELEMENT_IDENTIFIER = "js-item-index-element";
+const ITEM_CHECKED_BUTTON_IDENTIFIER = ".js-item-toggle";
 
 
-
+// this function is reponsible for generating an HTML string representing
+// a shopping list item. `item` is the object representing the list item.
+// `itemIndex` is the index of the item from the shopping list array (aka,
+// `STORE`). `template` is a jQuery object that represents the list item HTML
+// template.
 function generateItemElement(item, itemIndex, template) {
   return `
     <li class="${ITEM_INDEX_ELEMENT_IDENTIFIER}" ${ITEM_INDEX_ATTRIBUTE}="${itemIndex}">
@@ -39,62 +49,45 @@ function generateItemElement(item, itemIndex, template) {
 }
 
 
+// this function is reponsible for generating all the `<li>`s that will eventually get
+// inserted into the shopping list `ul` in the com. it takes one argument,
+// `shoppingList` which is the array representing the data in the shopping list.
 function generateShoppingItemsString(shoppingList) {
   console.log("Generating shopping list element");
+  // `items` will be an array of strings representing individual list items.
+  // we use the array `.map` function
+  // (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map?v=control)
+  // to loop through `shoppingList`.
   const items = shoppingList.map(
     (item, index) => generateItemElement(item, index));
+  // this function is responsible for returning a string, but `items` is an array.
+  // we return `items.join` because that will join the individual strings in `items`
+  // together into a single string.
   return items.join();
 }
 
 
+// this function is responsible for rendering a shopping list in the DOM.
 function renderShoppingList() {
   console.log("Rendering shopping list");
+  // we call `generateShoppingItemsString` to generate the string representing
+  // the shopping list items
   const shoppingListItemsString = generateShoppingItemsString(STORE);
+  // we then find the `SHOPPING_LIST_ELEMENT_ CLASS` element in the DOM,
+  // (which happens to be a `<ul>` with the class `.js-shopping-list` on it )
+  // and set its inner HTML to the value of `shoppingListItemsString`.
   $(SHOPPING_LIST_ELEMENT_CLASS).html(shoppingListItemsString);
 }
 
 
-// name says it all. responsible for adding a shopping list item.
-function addItemToShoppingList(itemName) {
-  console.log(`Adding "${itemName}" to shopping list`);
-  // adding a new item to the shopping list is as easy as pushing a new
-  // object onto the `STORE` array. we set `name` to `itemName` and default
-  // the new item to be unchecked (`checked: false`).
-  //
-  // Note that this function intentionally has *side effects* -- it mutates
-  // the global variable STORE (defined at the top of this file).
-  // Ideally you avoid side effects whenever possible,
-  // and there are good approaches to these sorts of situations on the front
-  // end that avoid side effects, but they are a bit too complex to get into
-  // here. Later in the course, when you're learning React though, you'll
-  // start to learn approaches that avoid this.
-  STORE.push({name: itemName, checked: false});
-}
-
-
-// responsible for watching for new item submissions. when those happen
-// it gets the name of the new item element, zeros out the form input value,
-// adds the new item to the list, and re-renders the shopping list in the DOM.
 function handleNewItemSubmit() {
-  $(NEW_ITEM_FORM_ID).submit(function(event) {
-    // stop the default form submission behavior
-    event.preventDefault();
-    // we get the item name from the text input in the submitted form
-    const newItemElement = $(NEW_ITEM_FORM_INPUT_CLASS);
-    const newItemName = newItemElement.val();
-    // now that we have the new item name, we remove it from the input so users
-    // can add new items
-    newItemElement.val("");
-    // update the shopping list with the new item...
-    addItemToShoppingList(newItemName);
-    // then render the updated shopping list
-    renderShoppingList();
-  });
+  // this function will be responsible for when users add a new shopping list item
+  console.log('`handleNewItemSubmit` ran');
 }
 
 
 function handleItemCheckClicked() {
-  // this funciton will be reponsible for when users click the "check" button on
+  // this function will be reponsible for when users click the "check" button on
   // a shopping list item.
   console.log('`handleItemCheckClicked` ran');
 }
